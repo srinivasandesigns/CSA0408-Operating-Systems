@@ -1,0 +1,13 @@
+#include <stdio.h>
+#include <stdlib.h>
+int cmp(const void*a,const void*b){return *(int*)a-*(int*)b;}
+int main(void){int n,a[100],head,size,total=0;
+ printf("Number of requests: ");scanf("%d",&n);if(n<1||n>100)return 1;
+ printf("Enter requests:\n");for(int i=0;i<n;i++)scanf("%d",&a[i]);
+ printf("Initial head: ");scanf("%d",&head);printf("Disk size (number of cylinders): ");scanf("%d",&size);qsort(a,n,sizeof(int),cmp);
+ int pos=0,cur=head;while(pos<n&&a[pos]<head)pos++;
+ for(int i=pos;i<n;i++){total+=abs(cur-a[i]);cur=a[i];}
+ if(cur!=size-1){total+=abs(cur-(size-1));cur=size-1;}
+ total+=(size-1);cur=0;
+ for(int i=0;i<pos;i++){total+=abs(cur-a[i]);cur=a[i];}
+ printf("Total head movement = %d\n",total);return 0;}
