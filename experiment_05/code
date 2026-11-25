@@ -1,0 +1,47 @@
+#include <stdio.h>
+int main(void) {
+    int n, i, j, time = 0, done[50] = {0};
+    int at[50], bt[50], pr[50], wt[50], tat[50], ct[50];
+    float awt = 0, atat = 0;
+
+    printf("Enter number of processes (1-50): ");
+    if (scanf("%d", &n) != 1 || n < 1 || n > 50) return 1;
+    for (i = 0; i < n; i++) {
+        printf("P%d arrival time, burst time, priority: ", i + 1);
+        scanf("%d%d%d", &at[i], &bt[i], &pr[i]);
+        if (at[i] < 0 || bt[i] <= 0) return 1;
+    }
+
+    for (i = 0; i < n; i++) {
+        int best = -1;
+        for (j = 0; j < n; j++)
+            if (!done[j] && at[j] <= time &&
+                (best == -1 || pr[j] < pr[best] ||
+                 (pr[j] == pr[best] && at[j] < at[best])))
+                best = j;
+
+        if (best == -1) {
+            int next = -1;
+            for (j = 0; j < n; j++)
+                if (!done[j] && (next == -1 || at[j] < at[next])) next = j;
+            time = at[next];
+            i--;
+            continue;
+        }
+        wt[best] = time - at[best];
+        time += bt[best];
+        ct[best] = time;
+        tat[best] = ct[best] - at[best];
+        done[best] = 1;
+    }
+
+    printf("\nPID\tAT\tBT\tPriority\tWT\tTAT\n");
+    for (i = 0; i < n; i++) {
+        printf("P%d\t%d\t%d\t%d\t\t%d\t%d\n",
+               i+1, at[i], bt[i], pr[i], wt[i], tat[i]);
+        awt += wt[i]; atat += tat[i];
+    }
+    printf("Average waiting time: %.2f\nAverage turnaround time: %.2f\n",
+           awt/n, atat/n);
+    return 0;
+}
