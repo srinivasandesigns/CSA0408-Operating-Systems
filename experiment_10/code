@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+
+struct message {
+    long type;
+    char text[100];
+};
+
+int main(void) {
+    int id = msgget(IPC_PRIVATE, IPC_CREAT | 0600);
+    struct message msg;
+    if (id == -1) { perror("msgget"); return 1; }
+
+    msg.type = 1;
+    strcpy(msg.text, "Hello from message queue!");
+    if (msgsnd(id, &msg, sizeof(msg.text), 0) == -1) {
+        perror("msgsnd"); msgctl(id, IPC_RMID, NULL); return 1;
+    }
+    printf("Producer: message sent: %s\n", msg.text);
+
+    if (msgrcv(id, &msg, sizeof(msg.text), 1, 0) == -1) {
+        perror("msgrcv"); msgctl(id, IPC_RMID, NULL); return 1;
+    }
+    printf("Consumer: message received: %s\n", msg.text);
+    msgctl(id, IPC_RMID, NULL);
+    return 0;
+}
