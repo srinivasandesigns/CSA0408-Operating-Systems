@@ -1,0 +1,26 @@
+#include <stdio.h>
+#define P 10
+#define R 10
+int main(void){
+    int n,m,alloc[P][R],max[P][R],need[P][R],avail[R],finish[P]={0},safe[P];
+    int i,j,count=0,work[R],found;
+    printf("Processes and resource types: "); scanf("%d%d",&n,&m);
+    if(n<1||n>P||m<1||m>R){puts("Limit exceeded.");return 1;}
+    printf("Enter Allocation matrix:\n");
+    for(i=0;i<n;i++)for(j=0;j<m;j++)scanf("%d",&alloc[i][j]);
+    printf("Enter Maximum matrix:\n");
+    for(i=0;i<n;i++)for(j=0;j<m;j++){scanf("%d",&max[i][j]);need[i][j]=max[i][j]-alloc[i][j];}
+    printf("Enter Available resources:\n");
+    for(j=0;j<m;j++){scanf("%d",&avail[j]);work[j]=avail[j];}
+    while(count<n){
+        found=0;
+        for(i=0;i<n;i++)if(!finish[i]){
+            for(j=0;j<m && need[i][j]<=work[j];j++);
+            if(j==m){for(j=0;j<m;j++)work[j]+=alloc[i][j];safe[count++]=i;finish[i]=1;found=1;}
+        }
+        if(!found)break;
+    }
+    if(count==n){printf("System is in SAFE state. Safe sequence: ");for(i=0;i<n;i++)printf("P%d%s",safe[i],i==n-1?"\n":" -> ");}
+    else puts("System is in UNSAFE state; no safe sequence exists.");
+    return 0;
+}
