@@ -1,0 +1,12 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <dirent.h>
+int main(int argc,char *argv[]){const char *file=argc>1?argv[1]:"sample.txt";int fd=open(file,O_CREAT|O_RDWR,0644);struct stat st;char c;
+ if(fd<0){perror("open");return 1;}write(fd,"Operating Systems\n",18);
+ printf("fcntl flags: %d\n",fcntl(fd,F_GETFL));lseek(fd,0,SEEK_SET);printf("File data: ");
+ while(read(fd,&c,1)==1)putchar(c);
+ if(fstat(fd,&st)==0)printf("File size: %ld bytes\n",(long)st.st_size);else perror("stat");
+ close(fd);DIR *d=opendir(".");if(!d){perror("opendir");return 1;}struct dirent *entry;puts("Directory entries:");
+ while((entry=readdir(d))!=NULL)puts(entry->d_name);closedir(d);return 0;}
