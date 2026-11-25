@@ -1,0 +1,8 @@
+#include <stdio.h>
+int main(void){int used[100]={0},n,b[100],ok=1;
+ printf("Number of blocks in file: ");scanf("%d",&n);if(n<1||n>100)return 1;
+ printf("Enter %d distinct disk block numbers (0-99):\n",n);for(int i=0;i<n;i++)scanf("%d",&b[i]);
+ for(int i=0;i<n;i++){if(b[i]<0||b[i]>=100||used[b[i]])ok=0;else used[b[i]]=1;}
+ if(!ok){puts("Allocation failed: invalid or duplicate block.");return 0;}
+ printf("Directory: start=%d, end=%d\nLinked chain: ",b[0],b[n-1]);
+ for(int i=0;i<n;i++)printf("%d -> ",b[i]);puts("NULL");return 0;}
