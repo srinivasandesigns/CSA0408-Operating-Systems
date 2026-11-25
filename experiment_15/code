@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <string.h>
+#define USERS 20
+#define FILES 30
+#define LEN 50
+
+int main(void) {
+    char users[USERS][LEN], files[USERS][FILES][LEN], name[LEN], fname[LEN];
+    int counts[USERS] = {0}, users_count = 0;
+    int choice, i, u, found;
+    do {
+        printf("\n1.Create user directory  2.Create file  3.List directory  4.Exit\nChoice: ");
+        scanf("%d", &choice);
+        if (choice == 1) {
+            if (users_count == USERS) { puts("Maximum directories reached."); continue; }
+            printf("Enter user directory name: "); scanf("%49s", name);
+            found = 0;
+            for (i = 0; i < users_count; i++) if (!strcmp(users[i], name)) found = 1;
+            if (found) puts("Directory already exists.");
+            else { strcpy(users[users_count++], name); puts("Directory created."); }
+        } else if (choice == 2) {
+            printf("Enter user directory: "); scanf("%49s", name);
+            u = -1;
+            for (i = 0; i < users_count; i++) if (!strcmp(users[i], name)) u = i;
+            if (u == -1) { puts("Directory not found."); continue; }
+            if (counts[u] == FILES) { puts("Directory is full."); continue; }
+            printf("Enter file name: "); scanf("%49s", fname);
+            found = 0;
+            for (i = 0; i < counts[u]; i++) if (!strcmp(files[u][i], fname)) found = 1;
+            if (found) puts("File already exists in this directory.");
+            else { strcpy(files[u][counts[u]++], fname); puts("File created."); }
+        } else if (choice == 3) {
+            printf("Enter user directory: "); scanf("%49s", name);
+            u = -1;
+            for (i = 0; i < users_count; i++) if (!strcmp(users[i], name)) u = i;
+            if (u == -1) puts("Directory not found.");
+            else {
+                printf("Files in %s:\n", users[u]);
+                if (!counts[u]) puts("No files.");
+                for (i = 0; i < counts[u]; i++) puts(files[u][i]);
+            }
+        }
+    } while (choice != 4);
+    return 0;
+}
