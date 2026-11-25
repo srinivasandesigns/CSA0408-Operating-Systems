@@ -1,0 +1,8 @@
+#include <stdio.h>
+int main(void){int n,f,p[100],fr[20],fault=0;
+ printf("Number of page references: ");scanf("%d",&n);printf("Enter reference string:\n");for(int i=0;i<n;i++)scanf("%d",&p[i]);
+ printf("Number of frames: ");scanf("%d",&f);if(f<1||f>20)return 1;for(int j=0;j<f;j++)fr[j]=-1;
+ for(int i=0;i<n;i++){int hit=0;for(int j=0;j<f;j++)if(fr[j]==p[i])hit=1;
+ if(!hit){fault++;int victim=-1,far=-1;for(int j=0;j<f;j++){if(fr[j]==-1){victim=j;break;}int k;for(k=i+1;k<n&&p[k]!=fr[j];k++);if(k>far){far=k;victim=j;}}fr[victim]=p[i];}
+ printf("%d:\t",p[i]);for(int j=0;j<f;j++)if(fr[j]<0)printf("- ");else printf("%d ",fr[j]);puts(hit?"Hit":"Fault");}
+ printf("Total page faults = %d\n",fault);return 0;}
