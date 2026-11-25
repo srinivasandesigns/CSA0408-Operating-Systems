@@ -1,0 +1,8 @@
+#include <stdio.h>
+#include <pthread.h>
+void *task(void *arg){printf("Thread running with value %ld\n",(long)arg);pthread_exit((void*)42);}
+int main(void){pthread_t t1,t2;void *result=NULL;
+ pthread_create(&t1,NULL,task,(void*)1);pthread_create(&t2,NULL,task,(void*)2);
+ printf("pthread_equal(t1,t2) = %d\n",pthread_equal(t1,t2));
+ pthread_join(t1,&result);printf("Joined thread return value = %ld\n",(long)result);
+ pthread_join(t2,NULL);return 0;}
