@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
+
+#define N 5
+#define ROUNDS 2
+pthread_mutex_t forks[N];
+pthread_mutex_t room;
+
+void *philosopher(void *arg) {
+    int id = *(int *)arg;
+    for (int r = 0; r < ROUNDS; r++) {
+        printf("Philosopher %d is thinking\n", id + 1);
+        pthread_mutex_lock(&room);
+        pthread_mutex_lock(&forks[id]);
+        pthread_mutex_lock(&forks[(id + 1) % N]);
+        printf("Philosopher %d is eating\n", id + 1);
+        usleep(100000);
+        pthread_mutex_unlock(&forks[(id + 1) % N]);
+        pthread_mutex_unlock(&forks[id]);
+        pthread_mutex_unlock(&room);
+    }
+    return NULL;
+}
+
+int main(void) {
+    pthread_t t[N];
+    int ids[N];
+    pthread_mutex_init(&room, NULL);
+    for (int i = 0; i < N; i++) pthread_mutex_init(&forks[i], NULL);
+    for (int i = 0; i < N; i++) {
+        ids[i] = i;
+        pthread_create(&t[i], NULL, philosopher, &ids[i]);
+    }
+    for (int i = 0; i < N; i++) pthread_join(t[i], NULL);
+    for (int i = 0; i < N; i++) pthread_mutex_destroy(&forks[i]);
+    pthread_mutex_destroy(&room);
+    puts("Dining philosophers simulation completed.");
+    return 0;
+}
