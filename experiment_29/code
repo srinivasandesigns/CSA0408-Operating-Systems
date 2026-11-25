@@ -1,0 +1,9 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <sched.h>
+volatile int flag[2]={0,0}, turn=0; long counter=0;
+void *worker(void *arg){int id=(int)(long)arg, other=1-id;
+ for(int i=0;i<100000;i++){flag[id]=1;turn=other;while(flag[other]&&turn==other)sched_yield();
+ counter++;flag[id]=0;}return NULL;}
+int main(void){pthread_t a,b;pthread_create(&a,NULL,worker,(void*)0);pthread_create(&b,NULL,worker,(void*)1);
+ pthread_join(a,NULL);pthread_join(b,NULL);printf("Counter = %ld (expected 200000)\n",counter);return 0;}
