@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct { int id; char name[40]; double salary; } Employee;
+int main(void) {
+    FILE *fp; Employee e; int choice, rec;
+    fp=fopen("employees.dat","rb+");
+    if(!fp) fp=fopen("employees.dat","wb+");
+    if(!fp){perror("employees.dat");return 1;}
+    while(1){
+        printf("\n1.Add/overwrite record 2.Read record 3.Exit\nChoice: ");
+        if(scanf("%d",&choice)!=1) break;
+        if(choice==3) break;
+        if(choice==1){
+            printf("Record number (starting from 0): "); scanf("%d",&rec);
+            if(rec<0){puts("Invalid record number.");continue;}
+            printf("Employee ID: "); scanf("%d",&e.id);
+            printf("Name (no spaces): "); scanf("%39s",e.name);
+            printf("Salary: "); scanf("%lf",&e.salary);
+            fseek(fp,(long)rec*sizeof(Employee),SEEK_SET);
+            if(fwrite(&e,sizeof e,1,fp)==1) puts("Record saved.");
+        } else if(choice==2){
+            printf("Record number (starting from 0): "); scanf("%d",&rec);
+            if(rec<0){puts("Invalid record number.");continue;}
+            fseek(fp,(long)rec*sizeof(Employee),SEEK_SET);
+            if(fread(&e,sizeof e,1,fp)==1)
+                printf("ID=%d Name=%s Salary=%.2f\n",e.id,e.name,e.salary);
+            else puts("Record not found.");
+        } else puts("Invalid choice.");
+    }
+    fclose(fp); return 0;
+}
