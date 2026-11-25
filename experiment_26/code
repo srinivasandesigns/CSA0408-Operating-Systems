@@ -1,0 +1,10 @@
+#include <stdio.h>
+#include <unistd.h>
+int main(void){int ch;char a[100],b[100],line[500];FILE *fp;
+ while(1){printf("\n1.Create/write 2.Read 3.Rename 4.Delete 5.Exit\nChoice: ");if(scanf("%d",&ch)!=1)break;
+ if(ch==5)break;
+ if(ch==1){printf("Filename: ");scanf("%99s",a);fp=fopen(a,"w");if(!fp){perror("fopen");continue;}printf("Text (one line): ");getchar();fgets(line,sizeof line,stdin);fputs(line,fp);fclose(fp);puts("Saved.");}
+ else if(ch==2){printf("Filename: ");scanf("%99s",a);fp=fopen(a,"r");if(!fp){perror("fopen");continue;}while(fgets(line,sizeof line,fp))fputs(line,stdout);fclose(fp);}
+ else if(ch==3){printf("Old filename: ");scanf("%99s",a);printf("New filename: ");scanf("%99s",b);if(rename(a,b)==0)puts("Renamed.");else perror("rename");}
+ else if(ch==4){printf("Filename: ");scanf("%99s",a);if(remove(a)==0)puts("Deleted.");else perror("remove");}
+ else puts("Invalid choice.");}return 0;}
