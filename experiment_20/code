@@ -1,0 +1,14 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+sem_t room_empty; pthread_mutex_t reader_lock=PTHREAD_MUTEX_INITIALIZER; int readers=0, shared_data=0;
+void *reader(void *arg){long id=(long)arg;pthread_mutex_lock(&reader_lock);readers++;if(readers==1)sem_wait(&room_empty);pthread_mutex_unlock(&reader_lock);
+    printf("Reader %ld reads value %d\n",id,shared_data);
+    pthread_mutex_lock(&reader_lock);readers--;if(readers==0)sem_post(&room_empty);pthread_mutex_unlock(&reader_lock);return NULL;}
+void *writer(void *arg){long id=(long)arg;sem_wait(&room_empty);shared_data++;printf("Writer %ld writes value %d\n",id,shared_data);sem_post(&room_empty);return NULL;}
+int main(void){pthread_t r[3],w[2];sem_init(&room_empty,0,1);
+    for(long i=0;i<3;i++)pthread_create(&r[i],NULL,reader,(void*)i);
+    for(long i=0;i<2;i++)pthread_create(&w[i],NULL,writer,(void*)i);
+    for(int i=0;i<3;i++)pthread_join(r[i],NULL);for(int i=0;i<2;i++)pthread_join(w[i],NULL);
+    sem_destroy(&room_empty);pthread_mutex_destroy(&reader_lock);return 0;}
